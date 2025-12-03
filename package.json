@@ -2,9 +2,7 @@
   "name": "cut-fruit-game",
   "version": "1.0.0",
   "private": true,
-  "engines": {
-    "node": ">=18.0.0"
-  },
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
