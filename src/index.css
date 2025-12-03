@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap');
 
 * {
   margin: 0;
@@ -11,7 +11,7 @@ html, body, #root {
   height: 100%;
   overflow: hidden;
   background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
-  font-family: 'Orbitron', 'Segoe UI Emoji', sans-serif;
+  font-family: 'Rajdhani', 'Orbitron', sans-serif;
 }
 
 .game-container {
@@ -29,39 +29,30 @@ html, body, #root {
   z-index: 1;
 }
 
+/* 摄像头容器 */
 .camera-container {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 280px;
-  height: 210px;
+  width: 300px;
+  height: 225px;
   border-radius: 16px;
   overflow: hidden;
   z-index: 100;
   box-shadow: 
-    0 0 30px rgba(0, 255, 255, 0.3),
-    0 0 60px rgba(255, 0, 255, 0.2),
-    inset 0 0 20px rgba(0, 0, 0, 0.5);
-  border: 2px solid rgba(0, 255, 255, 0.5);
-  background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+    0 0 40px rgba(0, 255, 255, 0.4),
+    0 0 80px rgba(255, 0, 255, 0.2),
+    inset 0 0 30px rgba(0, 0, 0, 0.6);
+  border: 3px solid transparent;
+  background: 
+    linear-gradient(#0a0a1a, #0a0a1a) padding-box,
+    linear-gradient(135deg, #0ff, #f0f, #0ff) border-box;
+  animation: containerPulse 3s ease-in-out infinite;
 }
 
-.camera-container::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, #0ff, #f0f, #0ff);
-  z-index: -1;
-  border-radius: 18px;
-  animation: borderGlow 3s linear infinite;
-}
-
-@keyframes borderGlow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+@keyframes containerPulse {
+  0%, 100% { box-shadow: 0 0 40px rgba(0, 255, 255, 0.4), 0 0 80px rgba(255, 0, 255, 0.2); }
+  50% { box-shadow: 0 0 60px rgba(0, 255, 255, 0.6), 0 0 100px rgba(255, 0, 255, 0.3); }
 }
 
 .camera-video {
@@ -82,19 +73,21 @@ html, body, #root {
 
 .camera-label {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  background: rgba(0, 0, 0, 0.7);
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.8);
   color: #0ff;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 8px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  border: 1px solid rgba(0, 255, 255, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  font-family: 'Orbitron', monospace;
 }
 
+/* UI 覆盖层 */
 .ui-overlay {
   position: fixed;
   top: 0;
@@ -105,6 +98,7 @@ html, body, #root {
   z-index: 50;
 }
 
+/* 分数显示 */
 .score-display {
   position: absolute;
   top: 30px;
@@ -115,46 +109,106 @@ html, body, #root {
 
 .score-label {
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
-  letter-spacing: 4px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 6px;
   text-transform: uppercase;
   margin-bottom: 5px;
+  font-family: 'Orbitron', monospace;
 }
 
 .score-value {
-  font-size: 72px;
+  font-size: 80px;
   font-weight: 900;
-  background: linear-gradient(180deg, #fff 0%, #0ff 50%, #f0f 100%);
+  font-family: 'Orbitron', monospace;
+  background: linear-gradient(180deg, #fff 0%, #0ff 40%, #f0f 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
+  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5));
+  line-height: 1;
 }
 
+/* 连击显示 */
 .combo-display {
   position: absolute;
   top: 140px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 700;
-  color: #ff0;
-  text-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .combo-display.active {
   opacity: 1;
-  animation: comboPulse 0.5s ease-out;
+  animation: comboAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes comboPulse {
-  0% { transform: translateX(-50%) scale(1.5); }
-  100% { transform: translateX(-50%) scale(1); }
+@keyframes comboAppear {
+  0% { transform: translateX(-50%) scale(2) rotate(-10deg); opacity: 0; }
+  50% { transform: translateX(-50%) scale(1.2) rotate(5deg); }
+  100% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 1; }
 }
 
+.combo-fire {
+  font-size: 32px;
+  animation: fireFlicker 0.3s ease-in-out infinite;
+}
+
+@keyframes fireFlicker {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.combo-count {
+  font-size: 40px;
+  color: #ff0;
+  text-shadow: 0 0 30px rgba(255, 255, 0, 0.8), 0 0 60px rgba(255, 200, 0, 0.5);
+  font-family: 'Orbitron', monospace;
+}
+
+.combo-text {
+  font-size: 24px;
+  color: #ff8800;
+  text-shadow: 0 0 20px rgba(255, 136, 0, 0.8);
+}
+
+/* 生命值 */
+.lives-display {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  display: flex;
+  gap: 8px;
+}
+
+.life {
+  font-size: 40px;
+  filter: drop-shadow(0 0 10px rgba(255, 0, 80, 0.6));
+  transition: all 0.3s ease;
+}
+
+.life.lost {
+  opacity: 0.2;
+  filter: grayscale(1);
+  transform: scale(0.8);
+}
+
+/* 最高分 */
+.high-score {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  color: rgba(255, 215, 0, 0.8);
+  font-size: 16px;
+  font-family: 'Orbitron', monospace;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* 游戏状态 */
 .game-status {
   position: absolute;
   top: 50%;
@@ -164,131 +218,286 @@ html, body, #root {
   pointer-events: auto;
 }
 
+.title-container {
+  margin-bottom: 40px;
+}
+
+.game-title {
+  font-size: 64px;
+  font-weight: 900;
+  font-family: 'Orbitron', monospace;
+  background: linear-gradient(135deg, #ff0080, #ff8c00, #40e0d0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(255, 0, 128, 0.5));
+  animation: titleGlow 2s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+  0%, 100% { filter: drop-shadow(0 0 30px rgba(255, 0, 128, 0.5)); }
+  50% { filter: drop-shadow(0 0 50px rgba(255, 140, 0, 0.7)); }
+}
+
+.game-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 8px;
+  margin-top: 10px;
+  font-family: 'Orbitron', monospace;
+}
+
 .start-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
   font-size: 24px;
   color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
-  animation: pulse 2s ease-in-out infinite;
+  animation: hintPulse 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
+@keyframes hintPulse {
   0%, 100% { opacity: 0.7; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
+  50% { opacity: 1; transform: scale(1.02); }
 }
 
+.hint-icon {
+  font-size: 36px;
+  animation: waveHand 1s ease-in-out infinite;
+}
+
+@keyframes waveHand {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(10deg); }
+}
+
+.hint-text {
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.high-score-display {
+  margin-top: 30px;
+  font-size: 20px;
+  color: rgba(255, 215, 0, 0.8);
+  font-family: 'Orbitron', monospace;
+}
+
+.high-score-display span {
+  color: #ffd700;
+  font-weight: 700;
+}
+
+/* 游戏结束 */
 .game-over {
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.9);
   padding: 50px 80px;
-  border-radius: 20px;
-  border: 2px solid rgba(255, 0, 100, 0.5);
-  box-shadow: 0 0 50px rgba(255, 0, 100, 0.3);
+  border-radius: 24px;
+  border: 3px solid transparent;
+  background: 
+    linear-gradient(rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.95)) padding-box,
+    linear-gradient(135deg, #ff0064, #ff6600) border-box;
+  box-shadow: 0 0 60px rgba(255, 0, 100, 0.4);
+  animation: gameOverAppear 0.5s ease-out;
+}
+
+@keyframes gameOverAppear {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .game-over h2 {
-  font-size: 48px;
-  color: #ff0064;
+  font-size: 56px;
+  font-family: 'Orbitron', monospace;
+  background: linear-gradient(180deg, #ff0064, #ff6600);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 20px;
-  text-shadow: 0 0 30px rgba(255, 0, 100, 0.8);
+  animation: gameOverPulse 1s ease-in-out infinite;
 }
 
-.game-over .final-score {
-  font-size: 36px;
-  color: #fff;
-  margin-bottom: 30px;
+@keyframes gameOverPulse {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 0, 100, 0.5)); }
+  50% { filter: drop-shadow(0 0 40px rgba(255, 100, 0, 0.8)); }
+}
+
+.final-score {
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 10px;
+}
+
+.score-number {
+  font-size: 48px;
+  font-weight: 900;
+  font-family: 'Orbitron', monospace;
+  color: #0ff;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.new-record {
+  font-size: 24px;
+  color: #ffd700;
+  margin: 15px 0;
+  animation: recordBounce 0.5s ease-in-out infinite;
+}
+
+@keyframes recordBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.high-score-info {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 25px;
+}
+
+.high-score-info span {
+  color: #ffd700;
 }
 
 .restart-btn {
   background: linear-gradient(135deg, #0ff, #f0f);
   border: none;
-  padding: 15px 40px;
-  font-size: 18px;
+  padding: 18px 50px;
+  font-size: 20px;
   font-weight: 700;
   color: #000;
-  border-radius: 30px;
+  border-radius: 40px;
   cursor: pointer;
   font-family: 'Orbitron', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   transition: all 0.3s ease;
-  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto;
 }
 
 .restart-btn:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
 }
 
-.lives-display {
-  position: absolute;
-  top: 30px;
-  right: 30px;
-  display: flex;
-  gap: 10px;
+.btn-icon {
+  font-size: 24px;
 }
 
-.life {
-  font-size: 36px;
-  filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.5));
-  transition: all 0.3s ease;
-}
-
-.life.lost {
-  opacity: 0.2;
-  filter: grayscale(1);
-}
-
+/* 游戏说明 */
 .instructions {
   position: absolute;
-  bottom: 250px;
+  bottom: 260px;
   right: 20px;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 15px 20px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 255, 255, 0.3);
-  max-width: 280px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px 25px;
+  border-radius: 16px;
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  max-width: 300px;
+  backdrop-filter: blur(10px);
 }
 
 .instructions h4 {
   color: #0ff;
-  font-size: 12px;
-  margin-bottom: 10px;
-  letter-spacing: 2px;
+  font-size: 14px;
+  margin-bottom: 12px;
+  letter-spacing: 3px;
+  font-family: 'Orbitron', monospace;
 }
 
 .instructions p {
   color: rgba(255, 255, 255, 0.7);
-  font-size: 11px;
-  line-height: 1.6;
-  font-family: sans-serif;
+  font-size: 13px;
+  line-height: 1.7;
 }
 
-.instructions .emoji-guide {
-  margin-top: 10px;
+.emoji-guide {
+  margin-top: 15px;
   display: flex;
   justify-content: space-around;
-  font-size: 24px;
 }
 
-.instructions .emoji-guide span {
+.guide-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 10px;
+  gap: 5px;
+}
+
+.guide-emoji {
+  font-size: 32px;
+}
+
+.guide-score {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Orbitron', monospace;
+}
+
+.guide-score.positive {
+  color: #00ff88;
+}
+
+.guide-score.negative {
+  color: #ff8800;
+}
+
+.guide-score.danger {
+  color: #ff0066;
+}
+
+/* 手势状态指示器 */
+.tracking-indicator {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px 18px;
+  border-radius: 25px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
 
-.instructions .emoji-guide span::before {
-  font-size: 28px;
-  margin-bottom: 5px;
+.tracking-indicator.active {
+  color: #0ff;
+  border-color: rgba(0, 255, 255, 0.4);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
 }
 
+.indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff3366;
+  transition: all 0.3s ease;
+}
+
+.tracking-indicator.active .indicator-dot {
+  background: #00ff88;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+  animation: dotPulse 1s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+
+/* 加载界面 */
 .loading-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: #0a0a1a;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -297,8 +506,8 @@ html, body, #root {
 }
 
 .loading-spinner {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border: 4px solid rgba(0, 255, 255, 0.2);
   border-top-color: #0ff;
   border-radius: 50%;
@@ -310,9 +519,45 @@ html, body, #root {
 }
 
 .loading-text {
-  margin-top: 20px;
+  margin-top: 25px;
   color: #0ff;
-  font-size: 16px;
-  letter-spacing: 3px;
+  font-size: 18px;
+  letter-spacing: 4px;
+  font-family: 'Orbitron', monospace;
 }
 
+.loading-subtext {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .camera-container {
+    width: 200px;
+    height: 150px;
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .score-value {
+    font-size: 50px;
+  }
+  
+  .game-title {
+    font-size: 36px;
+  }
+  
+  .instructions {
+    display: none;
+  }
+  
+  .game-over {
+    padding: 30px 40px;
+  }
+  
+  .game-over h2 {
+    font-size: 36px;
+  }
+}
