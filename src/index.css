@@ -1,0 +1,318 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
+  font-family: 'Orbitron', 'Segoe UI Emoji', sans-serif;
+}
+
+.game-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.three-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.camera-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 280px;
+  height: 210px;
+  border-radius: 16px;
+  overflow: hidden;
+  z-index: 100;
+  box-shadow: 
+    0 0 30px rgba(0, 255, 255, 0.3),
+    0 0 60px rgba(255, 0, 255, 0.2),
+    inset 0 0 20px rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(0, 255, 255, 0.5);
+  background: linear-gradient(45deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+}
+
+.camera-container::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #0ff, #f0f, #0ff);
+  z-index: -1;
+  border-radius: 18px;
+  animation: borderGlow 3s linear infinite;
+}
+
+@keyframes borderGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.camera-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(-1);
+}
+
+.camera-label {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #0ff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.ui-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.score-display {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.score-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.score-value {
+  font-size: 72px;
+  font-weight: 900;
+  background: linear-gradient(180deg, #fff 0%, #0ff 50%, #f0f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+  filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.3));
+}
+
+.combo-display {
+  position: absolute;
+  top: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28px;
+  font-weight: 700;
+  color: #ff0;
+  text-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.combo-display.active {
+  opacity: 1;
+  animation: comboPulse 0.5s ease-out;
+}
+
+@keyframes comboPulse {
+  0% { transform: translateX(-50%) scale(1.5); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+
+.game-status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: auto;
+}
+
+.start-hint {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.game-over {
+  background: rgba(0, 0, 0, 0.85);
+  padding: 50px 80px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 0, 100, 0.5);
+  box-shadow: 0 0 50px rgba(255, 0, 100, 0.3);
+}
+
+.game-over h2 {
+  font-size: 48px;
+  color: #ff0064;
+  margin-bottom: 20px;
+  text-shadow: 0 0 30px rgba(255, 0, 100, 0.8);
+}
+
+.game-over .final-score {
+  font-size: 36px;
+  color: #fff;
+  margin-bottom: 30px;
+}
+
+.restart-btn {
+  background: linear-gradient(135deg, #0ff, #f0f);
+  border: none;
+  padding: 15px 40px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #000;
+  border-radius: 30px;
+  cursor: pointer;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+}
+
+.restart-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+}
+
+.lives-display {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  display: flex;
+  gap: 10px;
+}
+
+.life {
+  font-size: 36px;
+  filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.5));
+  transition: all 0.3s ease;
+}
+
+.life.lost {
+  opacity: 0.2;
+  filter: grayscale(1);
+}
+
+.instructions {
+  position: absolute;
+  bottom: 250px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 15px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  max-width: 280px;
+}
+
+.instructions h4 {
+  color: #0ff;
+  font-size: 12px;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.instructions p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+  line-height: 1.6;
+  font-family: sans-serif;
+}
+
+.instructions .emoji-guide {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-around;
+  font-size: 24px;
+}
+
+.instructions .emoji-guide span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.instructions .emoji-guide span::before {
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0a0a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(0, 255, 255, 0.2);
+  border-top-color: #0ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 20px;
+  color: #0ff;
+  font-size: 16px;
+  letter-spacing: 3px;
+}
+
